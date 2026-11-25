@@ -4,38 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Advent Calendar 2026</title>
-<style>
-:root{--bg:#f6efe4;--card:#fffaf2;--text:#2b2220;--muted:#7a6a62;--door:#b3262e;--door2:#8e1d24;--gold:#d4a017;--lock:#cfc3b6;--shadow:rgba(0,0,0,.18);
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14201b;--card:#1f2e27;--text:#f3ece0;--muted:#a9b8ae;--door:#c63a42;--door2:#9c2a31;--lock:#33433b;--shadow:rgba(0,0,0,.5)}}
-:root[data-theme="dark"]{--bg:#14201b;--card:#1f2e27;--text:#f3ece0;--muted:#a9b8ae;--door:#c63a42;--door2:#9c2a31;--lock:#33433b;--shadow:rgba(0,0,0,.5)}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Georgia,"Times New Roman",serif;min-height:100vh}
-header{text-align:center;padding:28px 16px 8px}
-h1{margin:0;font-size:clamp(28px,6vw,46px);letter-spacing:.5px}
-header p{margin:8px 0 0;color:var(--muted)}
-main{max-width:760px;margin:0 auto;padding:16px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-@media (max-width:520px){.grid{grid-template-columns:repeat(3,1fr)}}
-.door{aspect-ratio:1;border:0;border-radius:12px;font:inherit;font-size:clamp(22px,5vw,32px);font-weight:bold;color:#fff;cursor:pointer;background:linear-gradient(145deg,var(--door),var(--door2));box-shadow:0 3px 8px var(--shadow);position:relative;transition:transform .15s}
-.door:hover:not(:disabled){transform:translateY(-2px) rotate(-1deg)}
-.door.today{outline:3px solid var(--gold);outline-offset:2px}
-.door.opened{background:var(--card);color:var(--text);border:2px solid var(--door)}
-.door.opened::after{content:attr(data-e);position:absolute;bottom:6px;right:8px;font-size:16px}
-.door:disabled{background:var(--lock);color:var(--muted);cursor:not-allowed;box-shadow:none}
-.door:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
-.modal.show{display:flex}
-.panel{background:var(--card);color:var(--text);max-width:420px;width:100%;border-radius:16px;padding:28px 24px;text-align:center;border-top:6px solid var(--door)}
-.panel .big{font-size:56px}
-.panel h2{margin:8px 0}
-.panel p{line-height:1.5;margin:0 0 20px}
-.panel button{font:inherit;background:var(--door);color:#fff;border:0;border-radius:8px;padding:10px 22px;cursor:pointer}
-#pv{display:none;text-align:center;margin:12px 0;color:var(--muted)}
-#pv input{width:64px;font:inherit}
-footer{text-align:center;color:var(--muted);font-size:14px;padding:20px}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
@@ -55,107 +24,6 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:20px}
     <button id="mc">Close</button>
   </div>
 </div>
-<script>
-// ====== EDIT HERE ======
-const YEAR = 2026;
-const DAYS = [
-  ["🕯️","Light the first candle","Welcome to December! Take a quiet minute tonight to light a candle and enjoy the glow."],
-  ["☕","Hot chocolate time","Make yourself a mug of hot chocolate today. Extra marshmallows encouraged."],
-  ["🎵","Today’s song","Put on your favorite holiday song and sing along, loudly."],
-  ["💌","Send a card","Write a short note to someone you haven’t talked to in a while."],
-  ["🍪","Bake something","Cookies, gingerbread, anything. Share a few with a neighbor."],
-  ["🧦","Cozy day","Warm socks, soft blanket, a good book. You’ve earned it."],
-  ["⛄","Go outside","Take a walk and look for Christmas lights in your neighborhood."],
-  ["🎁","Small kindness","Do one unexpected nice thing for someone today."],
-  ["📸","Memory lane","Look through old holiday photos and smile."],
-  ["🍊","Fresh and festive","Peel an orange and enjoy the smell. Instant holiday."],
-  ["🎬","Movie night","Pick a favorite holiday film and watch it tonight."],
-  ["✨","Make an ornament","Craft something simple for the tree out of paper or ribbon."],
-  ["📞","Call someone","Phone a friend or relative just to say hello."],
-  ["🥣","Soup for supper","Warm, simple, and comforting. Tonight is a soup night."],
-  ["🌲","Tree time","Decorate the tree, or just admire one."],
-  ["🙏","Gratitude","Write down three things from this year you’re thankful for."],
-  ["🎲","Game night","Gather everyone for a board game or cards."],
-  ["🧣","Give something away","Donate a coat, a toy, or some food to someone in need."],
-  ["📖","Story time","Read a holiday story aloud, even if it’s just to yourself."],
-  ["🍫","Treat yourself","Enjoy a little chocolate. No guilt allowed."],
-  ["🌟","Shortest day","The winter solstice is near. Look up at the night sky."],
-  ["🎶","Carol along","Hum a carol while you tidy up. It makes chores lighter."],
-  ["🛷","Almost there","Wrap the last gifts and take a deep, happy breath."],
-  ["🔔","Christmas Eve","Merry Christmas Eve! Thank you for opening every door. Enjoy the magic tonight."]
-];
-// Day 1-24 must exist; add extra entries so there are 24 total.
-while (DAYS.length < 24) DAYS.push(["🎄","Merry Christmas","Wishing you joy today."]);
-// =======================
-
-const $ = id => document.getElementById(id);
-let previewDay = null, seen = {};
-try { seen = JSON.parse(localStorage.getItem("advent" + YEAR) || "{}"); } catch (e) { seen = {}; }
-
-function today() {
-  if (previewDay !== null) return previewDay; // 0 before, 25 after
-  const n = new Date(), y = n.getFullYear(), m = n.getMonth(), d = n.getDate();
-  if (y < YEAR || (y === YEAR && m < 11)) return 0;
-  if (y > YEAR || d > 24) return 25;
-  return d;
-}
-
-function render() {
-  const t = today(), g = $("grid");
-  g.innerHTML = "";
-  for (let i = 1; i <= 24; i++) {
-    const b = document.createElement("button");
-    b.className = "door";
-    b.textContent = i;
-    if (i > t) { b.disabled = true; b.setAttribute("aria-label", "Day " + i + " locked"); }
-    else {
-      if (i === t) b.classList.add("today");
-      if (seen[i]) { b.classList.add("opened"); b.dataset.e = DAYS[i - 1][0]; }
-      b.onclick = () => openDay(i);
-    }
-    g.appendChild(b);
-  }
-  $("status").textContent = t === 0 ? "The calendar opens on December 1. Come back soon!"
-    : t === 25 ? "All 24 doors are open. Merry Christmas!"
-    : "Today is December " + t + ". Tap any unlocked door.";
-}
-
-function openDay(i) {
-  const d = DAYS[i - 1];
-  $("me").textContent = d[0];
-  $("mt").textContent = "December " + i + ": " + d[1];
-  $("mm").textContent = d[2];
-  $("modal").classList.add("show");
-  $("mc").focus();
-  if (previewDay === null) {
-    seen[i] = 1;
-    try { localStorage.setItem("advent" + YEAR, JSON.stringify(seen)); } catch (e) {}
-  }
-  render();
-}
-
-$("mc").onclick = () => $("modal").classList.remove("show");
-$("modal").onclick = e => { if (e.target === $("modal")) $("modal").classList.remove("show"); };
-document.addEventListener("keydown", e => { if (e.key === "Escape") $("modal").classList.remove("show"); });
-
-function showPreview(on) {
-  $("pv").style.display = on ? "block" : "none";
-  previewDay = on ? Math.max(0, Math.min(25, parseInt($("pvd").value || "0", 10))) : null;
-  render();
-}
-$("pvd").oninput = () => showPreview(true);
-// Tap the title 5 times quickly to toggle preview mode (works even when the URL hash is not passed through)
-let taps = 0, tapTimer;
-document.querySelector("h1").onclick = () => {
-  taps++; clearTimeout(tapTimer); tapTimer = setTimeout(() => { taps = 0; }, 1500);
-  if (taps >= 5) { taps = 0; showPreview($("pv").style.display !== "block"); }
-};
-window.addEventListener("hashchange", () => showPreview(location.hash === "#preview"));
-render();
-if (location.hash === "#preview") showPreview(true);
-// Auto-open today's door on arrival (only during Dec 1-24)
-const t0 = today();
-if (t0 >= 1 && t0 <= 24 && location.hash !== "#preview") openDay(t0);
-</script>
+<script src="script.js"></script>
 </body>
 </html>
