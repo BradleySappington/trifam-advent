@@ -11,7 +11,7 @@ try { seen = JSON.parse(localStorage.getItem("advent" + YEAR) || "{}"); } catch 
 function today() {
   if (previewDay !== null) return previewDay; // 0 before, 25 after
   const n = new Date(), y = n.getFullYear(), m = n.getMonth(), d = n.getDate();
-  if (y < YEAR || (y === YEAR && m < 10)) return 0; // temp test for november
+  if (y < YEAR || (y === YEAR && m < 11)) return 0;
   if (y > YEAR || d > 24) return 25;
   return d;
 }
